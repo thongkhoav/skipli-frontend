@@ -1,5 +1,11 @@
-export const PATH = {
-  LOGIN: "/login",
-  REGISTER: "/register",
-  TASKS: "/",
+export const GUEST_PATH = {
+  LOGIN_PHONE: "/login-phone",
+  LOGIN_EMAIL: "/login-email",
+  STUDENT_SETUP: "/student-setup",
+};
+
+export const USER_PATH = {
+  STUDENTS: "/students",
+  LESSONS: "/lessons",
+  CHAT: "/chat",
 };
