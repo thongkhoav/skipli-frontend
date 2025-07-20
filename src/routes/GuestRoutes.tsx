@@ -1,14 +1,19 @@
-import React, { lazy, Suspense } from "react";
-import { Link, Route, Routes } from "react-router-dom";
-import { GUEST_PATH } from "../utils/constants";
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { GUEST_PATH, USER_PATH } from "../utils/constants";
 import Loading from "../components/Loading/Loading";
+import { useAuth } from "~/utils/helpers";
+import { UserRole } from "~/store/AuthContext";
 const LoginPhone = lazy(() => import("~/pages/guest/login-phone/LoginPhone"));
 const LoginEmail = lazy(() => import("~/pages/guest/login-email/LoginEmail"));
+const LoginAccount = lazy(
+  () => import("~/pages/guest/login-account/LoginAccount")
+);
 const StudentSetup = lazy(
   () => import("~/pages/guest/student-setup/StudentSetup")
 );
 
-export default function LoginRoutes() {
+export default function GuestRoutes() {
   return (
     <Routes>
       <Route
@@ -24,6 +29,14 @@ export default function LoginRoutes() {
         Component={() => (
           <Suspense fallback={<Loading />}>
             <LoginEmail />
+          </Suspense>
+        )}
+      />
+      <Route
+        path={GUEST_PATH.LOGIN_ACCOUNT}
+        Component={() => (
+          <Suspense fallback={<Loading />}>
+            <LoginAccount />
           </Suspense>
         )}
       />

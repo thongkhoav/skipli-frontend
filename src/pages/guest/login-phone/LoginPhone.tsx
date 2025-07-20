@@ -1,13 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "~/utils/helpers";
 import { ToastError, ToastSuccess } from "../../../components/Toast/Toast";
 import { requestCodeForPhoneApi } from "~/apis/user.api";
+import { Link, useNavigate } from "react-router-dom";
+import { GUEST_PATH, USER_PATH } from "~/utils/constants";
+import { UserRole } from "~/store/AuthContext";
 
 const LoginPhone = () => {
   const [phone, setPhone] = useState("");
   const { onLogin } = useAuth();
   const [codeSent, setCodeSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const { userGlobal } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userGlobal) {
+      navigate(
+        userGlobal.role === UserRole.INSTRUCTOR
+          ? USER_PATH.STUDENTS
+          : USER_PATH.LESSONS
+      );
+    }
+  }, [navigate, userGlobal]);
 
   const onChangePhone = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(event.target.value);
@@ -57,6 +72,12 @@ const LoginPhone = () => {
               Send OTP
             </button>
           </form>
+          <Link
+            to={GUEST_PATH.LOGIN_EMAIL}
+            className="text-indigo-500 hover:underline"
+          >
+            Login by Email
+          </Link>
         </div>
       ) : (
         <div className="max-w-md w-full bg-white p-6 rounded-lg flex flex-col items-center shadow-lg shadow-box">
@@ -79,6 +100,12 @@ const LoginPhone = () => {
               Verify
             </button>
           </form>
+          <span
+            onClick={() => setCodeSent(false)}
+            className="text-blue-500 hover:underline"
+          >
+            Back
+          </span>
         </div>
       )}
     </div>

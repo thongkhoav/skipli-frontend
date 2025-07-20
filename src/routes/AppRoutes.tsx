@@ -7,8 +7,8 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <GuestRoutes />
         <UserRoutes />
+        <GuestRoutes />
       </AuthProvider>
     </BrowserRouter>
   );

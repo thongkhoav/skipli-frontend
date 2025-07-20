@@ -1,11 +1,20 @@
 // src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
+import { UserRole } from "~/store/AuthContext";
 import { GUEST_PATH } from "~/utils/constants";
+import { useAuth } from "~/utils/helpers";
 
-export default function ProtectedRoute({ children }: any) {
-  const user = localStorage.getItem("user");
+interface Props {
+  children: React.ReactElement;
+  allowedRoles?: UserRole[];
+}
 
-  if (!user) {
+export default function ProtectedRoute({ allowedRoles = [], children }: Props) {
+  const { userGlobal } = useAuth();
+  console.log("ProtectedRoute 2xs userGlobal:", userGlobal);
+
+  if (!userGlobal || !allowedRoles?.includes(userGlobal.role as UserRole)) {
+    console.log("ProtectedRoute: userGlobal is null or role not allowed");
     return <Navigate to={GUEST_PATH.LOGIN_PHONE} replace />;
   }
 

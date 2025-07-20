@@ -25,12 +25,6 @@ export const setUserData = (user: Partial<LoginUser>) => {
   if (!user || typeof user !== "object") {
     throw new Error("No valid data found");
   }
-  if (Object.keys(user).length === 0) {
-    throw new Error("No data found");
-  }
-  if (typeof Storage === "undefined") {
-    throw new Error("No valid storage type found");
-  }
   localStorage.setItem("user", JSON.stringify(user));
 };
 

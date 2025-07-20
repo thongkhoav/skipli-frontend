@@ -9,7 +9,7 @@ import {
 } from "~/utils/helpers/auth";
 import { USER_PATH, GUEST_PATH } from "~/utils/constants";
 import { toast } from "react-toastify";
-import { validateAccessCodeApi } from "../apis/user.api";
+import { loginByAccountApi, validateAccessCodeApi } from "../apis/user.api";
 import { UserRole } from "~/store/AuthContext";
 import { ToastSuccess } from "~/components/Toast/Toast";
 
@@ -19,13 +19,16 @@ function AuthProvider({ children }: any) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // setUserData(userGlobal === null ? {} : userGlobal);
+    console.log("AuthProvider userGlobal:", userGlobal);
+    setUserData(userGlobal === null ? {} : userGlobal);
     if (userGlobal != null) {
-      // if (userGlobal?.role === Role.ADM) {
-      //   navigate("/admin");
-      // }
+      if (userGlobal?.role === UserRole.INSTRUCTOR) {
+        navigate(USER_PATH.STUDENTS);
+      } else if (userGlobal?.role === UserRole.STUDENT) {
+        navigate(USER_PATH.LESSONS);
+      }
     }
-  }, [userGlobal]);
+  }, []);
 
   const handleValidateCode = async (
     phoneNumber: string,
@@ -36,6 +39,33 @@ function AuthProvider({ children }: any) {
       const response = await validateAccessCodeApi({
         phoneNumber,
         accessCode,
+        email,
+      });
+      console.log({
+        type: "after validateAccessCodeApi",
+        response,
+      });
+      setUserData(response.data);
+      setUserGlobal(response.data);
+
+      if (response.data.role === UserRole.INSTRUCTOR) {
+        navigate(USER_PATH.STUDENTS);
+        return;
+      } else if (response.data.role === UserRole.STUDENT) {
+        navigate(USER_PATH.LESSONS);
+        return;
+      }
+      ToastSuccess("Login successful!");
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleLoginByAccount = async (email: string, password: string) => {
+    try {
+      const response = await loginByAccountApi({
+        password,
         email,
       });
       console.log({
@@ -76,6 +106,7 @@ function AuthProvider({ children }: any) {
       setUserGlobal,
       onLogin: handleValidateCode,
       onLogout: handleLogout,
+      onLoginByAccount: handleLoginByAccount,
     }),
     [localAccessToken, userGlobal]
   ) as IAuthContext;

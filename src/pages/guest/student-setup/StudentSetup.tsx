@@ -1,12 +1,39 @@
-import React, { useState } from "react";
-import { ToastError } from "../../../components/Toast/Toast";
+import React, { useEffect, useState } from "react";
+import { ToastError, ToastSuccess } from "../../../components/Toast/Toast";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import useAxiosPrivate from "~/axios/useAxiosPrivate";
+import { checkStudentNotSetupApi } from "~/apis/user.api";
+import { GUEST_PATH } from "~/utils/constants";
 
 const StudentSetup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const axiosPrivate = useAxiosPrivate();
+
+  useEffect(() => {
+    console.log("Token from params:", searchParams.entries());
+    if (!searchParams.get("token")) {
+      ToastError("Invalid setup link.");
+      navigate(GUEST_PATH.LOGIN_EMAIL);
+    } else {
+      checkStudentNotSetupApi(searchParams.get("token")!)
+        .then((res) => {
+          if (!res?.data?.isNotSetup) {
+            ToastError("You have already setup your account.");
+            navigate(GUEST_PATH.LOGIN_EMAIL);
+          }
+        })
+        .catch(() => {
+          navigate(GUEST_PATH.LOGIN_EMAIL);
+        });
+    }
+  }, []);
 
   const onChangeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
+    // Remove spaces from username
+    setUsername(event.target.value.replace(/\s/g, ""));
   };
 
   const onChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,9 +46,20 @@ const StudentSetup = () => {
       ToastError("Username and password are required.");
       return;
     }
+    if (password.length < 6) {
+      ToastError("Password must be at least 6 characters long.");
+      return;
+    }
     try {
+      await axiosPrivate.post(`/setupAccount`, {
+        token: searchParams.get("token"),
+        username,
+        password,
+      });
+      ToastSuccess("Account setup successful!");
+      navigate("/login-email");
     } catch (error: any) {
-      ToastError(error.message);
+      ToastError(error.response.data.message);
     }
   };
 
@@ -44,6 +82,7 @@ const StudentSetup = () => {
             <input
               onChange={onChangePassword}
               value={password}
+              min={6}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
               required
               type="password"
