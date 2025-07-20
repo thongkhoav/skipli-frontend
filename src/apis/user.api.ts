@@ -20,15 +20,20 @@ interface AccessTokenRes extends AxiosResponse {
 }
 
 export interface ReqLogin {
-  phone?: string;
+  phoneNumber?: string;
   email?: string;
-  code: string;
+  accessCode: string;
 }
 
 export const validateAccessCodeApi = async (
   body: ReqLogin
 ): Promise<{ data: LoginUser }> =>
-  await axios.post(`${HOST}/api/v1/users/login`, body);
+  await axios.post(`${HOST}/validateAccessCode`, body);
+
+export const requestCodeForPhoneApi = async (
+  phoneNumber: string
+): Promise<void> =>
+  await axios.post(`${HOST}/createAccessCode`, { phoneNumber });
 
 // export const logoutApi = async (accessToken: string, refreshToken: string) => {
 //   const data = {
@@ -46,12 +51,3 @@ export const getAccessTokenApi = async (
   await axios.post(`${HOST}/api/v1/users/refresh-token`, {
     refreshToken,
   });
-
-export const loginGoogleApi = async () => {
-  const res = await axios.get(`${HOST}/api/auth/google/success`, {
-    withCredentials: true,
-  });
-  return res;
-};
-
-export const deleteUserApiPath = (id: string) => `${HOST}/api/v1/users/${id}`;

@@ -35,20 +35,6 @@ export default function LoginRoutes() {
           </Suspense>
         )}
       />
-      <Route
-        path="*"
-        element={
-          <div className="max-w-md mx-auto mt-20 text-center ">
-            <p>Page Not Found</p>
-            <Link
-              to={GUEST_PATH.LOGIN_PHONE}
-              className="text-indigo-500 hover:underline"
-            >
-              Go to Login
-            </Link>
-          </div>
-        }
-      />
     </Routes>
   );
 }

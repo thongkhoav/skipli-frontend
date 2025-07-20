@@ -3,7 +3,7 @@ import { LoginUser } from "~/apis/user.api";
 
 export interface IAuthContext {
   token: string;
-  onLogin: (phone: string, code: string) => void;
+  onLogin: (phone: string, accessCode: string, email: string) => void;
   onLogout: () => void;
   userGlobal: LoginUser;
   setUserGlobal: React.Dispatch<any>;
@@ -26,6 +26,6 @@ export const AuthContext = createContext<IAuthContext>({
     refreshToken: "",
   },
   setUserGlobal: () => {},
-  onLogin: () => {},
+  onLogin: (phone: string, accessCode: string, email: string) => {},
   onLogout: () => {},
 });

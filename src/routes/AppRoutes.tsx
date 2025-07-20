@@ -1,4 +1,4 @@
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import GuestRoutes from "./GuestRoutes";
 import AuthProvider from "~/store/AuthProvider";
 import UserRoutes from "./UserRoutes";

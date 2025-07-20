@@ -11,6 +11,7 @@ import { USER_PATH, GUEST_PATH } from "~/utils/constants";
 import { toast } from "react-toastify";
 import { validateAccessCodeApi } from "../apis/user.api";
 import { UserRole } from "~/store/AuthContext";
+import { ToastSuccess } from "~/components/Toast/Toast";
 
 function AuthProvider({ children }: any) {
   const localAccessToken = getAccessToken() || null;
@@ -26,22 +27,32 @@ function AuthProvider({ children }: any) {
     }
   }, [userGlobal]);
 
-  const handleValidateCode = async (phone: string, code: string) => {
+  const handleValidateCode = async (
+    phoneNumber: string,
+    accessCode: string,
+    email: string
+  ) => {
     try {
-      const user = await validateAccessCodeApi({
-        phone,
-        code,
+      const response = await validateAccessCodeApi({
+        phoneNumber,
+        accessCode,
+        email,
       });
-      setUserData(user.data);
-      setUserGlobal(user.data);
+      console.log({
+        type: "after validateAccessCodeApi",
+        response,
+      });
+      setUserData(response.data);
+      setUserGlobal(response.data);
 
-      if (user.data.role === UserRole.INSTRUCTOR) {
+      if (response.data.role === UserRole.INSTRUCTOR) {
         navigate(USER_PATH.STUDENTS);
         return;
-      } else if (user.data.role === UserRole.STUDENT) {
+      } else if (response.data.role === UserRole.STUDENT) {
         navigate(USER_PATH.LESSONS);
         return;
       }
+      ToastSuccess("Login successful!");
     } catch (error: any) {
       console.log(error);
       toast.error(error.response.data.message);
