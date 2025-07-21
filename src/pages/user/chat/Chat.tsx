@@ -1,12 +1,15 @@
+import { UserRole } from "~/store/AuthContext";
+import { useAuth } from "~/utils/helpers";
+import InstructorChatPage from "./InstructorChatPage";
+import StudentChatPage from "./StudentChatPage";
+
 const ChatPage = () => {
+  const { userGlobal } = useAuth();
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div
-        className={` max-w-md w-full bg-white p-6 rounded-lg flex flex-col items-center`}
-      >
-        chat
-      </div>
-    </div>
+    <>
+      {userGlobal?.role === UserRole.INSTRUCTOR && <InstructorChatPage />}
+      {userGlobal?.role === UserRole.STUDENT && <StudentChatPage />}
+    </>
   );
 };
 

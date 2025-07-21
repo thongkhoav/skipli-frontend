@@ -16,9 +16,8 @@ const Sidebar = () => {
           <Link
             to={USER_PATH.STUDENTS}
             className={`px-4 py-2 rounded-md text-gray-700 hover:text-blue-500 ${
-              currentPath.includes(USER_PATH.STUDENTS)
-                ? "font-bold bg-blue-500 text-white"
-                : ""
+              currentPath.includes(USER_PATH.STUDENTS) &&
+              "font-bold bg-blue-500 text-white hover:bg-blue-200"
             }`}
           >
             Students
@@ -27,9 +26,8 @@ const Sidebar = () => {
         <Link
           to={USER_PATH.LESSONS}
           className={`px-4 py-2 rounded-md text-gray-700 hover:text-blue-500 ${
-            currentPath.includes(USER_PATH.LESSONS)
-              ? "font-bold bg-blue-500 text-white"
-              : ""
+            currentPath.includes(USER_PATH.LESSONS) &&
+            "font-bold bg-blue-500 text-white hover:bg-blue-200 "
           }`}
         >
           Lessons
@@ -37,9 +35,8 @@ const Sidebar = () => {
         <Link
           to={USER_PATH.CHAT}
           className={`px-4 py-2 rounded-md text-gray-700 hover:text-blue-500 ${
-            currentPath.includes(USER_PATH.CHAT)
-              ? "font-bold bg-blue-500 text-white"
-              : ""
+            currentPath.includes(USER_PATH.CHAT) &&
+            "font-bold bg-blue-500 text-white hover:bg-blue-200"
           }`}
         >
           Chat

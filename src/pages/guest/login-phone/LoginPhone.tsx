@@ -39,7 +39,7 @@ const LoginPhone = () => {
       setCodeSent(true);
       ToastSuccess("Code sent to your phone. Please check your messages.");
     } catch (error: any) {
-      ToastError(error.message);
+      ToastError(error?.response?.data?.message || "Failed to send code.");
     }
   };
   const verificationFormSubmit = async (
@@ -53,7 +53,7 @@ const LoginPhone = () => {
     <div className="flex flex-col items-center justify-center min-h-screen">
       {!codeSent ? (
         <div className=" max-w-md w-full bg-white p-6 rounded-lg flex flex-col items-center shadow-lg shadow-box">
-          <h1 className="text-2xl font-bold mb-8">Login by Phone</h1>
+          <h1 className="text-2xl font-bold mb-8">Instructor Login</h1>
 
           <form onSubmit={requestFormSubmit} className="w-60">
             <div className="mb-4">
@@ -73,10 +73,16 @@ const LoginPhone = () => {
             </button>
           </form>
           <Link
-            to={GUEST_PATH.LOGIN_EMAIL}
+            to={GUEST_PATH.CREATE_INSTRUCTOR}
             className="text-indigo-500 hover:underline"
           >
-            Login by Email
+            Instructor Signup
+          </Link>
+          <Link
+            to={GUEST_PATH.LOGIN_ACCOUNT}
+            className="text-indigo-500 hover:underline"
+          >
+            Student Login
           </Link>
         </div>
       ) : (

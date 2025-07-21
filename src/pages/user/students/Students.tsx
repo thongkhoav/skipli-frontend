@@ -4,6 +4,7 @@ import { ToastError, ToastSuccess } from "~/components/Toast/Toast";
 import useAxiosPrivate from "~/axios/useAxiosPrivate";
 import { Student } from "~/utils/types/student.type";
 import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
+import { LuAsterisk } from "react-icons/lu";
 
 const customStyles = {
   content: {
@@ -19,10 +20,14 @@ const customStyles = {
 const Students = () => {
   const axiosPrivate = useAxiosPrivate();
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
   const [newStudentPhone, setNewStudentPhone] = useState("");
   const [newStudentEmail, setNewStudentEmail] = useState("");
-  const [newStudentRole, setNewStudentRole] = useState("");
+  const [newStudentAddress, setNewStudentAddress] = useState("");
+  const [editStudentId, setEditStudentId] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editAddress, setEditAddress] = useState("");
   const [students, setStudents] = useState<Student[]>([]);
 
   const fetchStudents = useCallback(async () => {
@@ -42,19 +47,31 @@ const Students = () => {
     setAddModalOpen(true);
   }
 
+  const openEditModal = (student: Student) => {
+    setEditStudentId(student?.id);
+    setEditName(student?.name);
+    setEditAddress(student?.address || "");
+    setEditModalOpen(true);
+  };
+
   function closeAddModal() {
     setAddModalOpen(false);
+    setNewStudentName("");
+    setNewStudentPhone("");
+    setNewStudentEmail("");
+    setNewStudentAddress("");
+  }
+
+  function closeEditModal() {
+    setEditModalOpen(false);
+    setEditName("");
+    setEditAddress("");
   }
 
   const addStudentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (
-      !newStudentName ||
-      !newStudentPhone ||
-      !newStudentEmail ||
-      !newStudentRole
-    ) {
-      ToastError("All fields are required.");
+    if (!newStudentName || !newStudentPhone || !newStudentEmail) {
+      ToastError("Please fill in required fields.");
       return;
     }
     try {
@@ -62,18 +79,48 @@ const Students = () => {
         name: newStudentName,
         phone: newStudentPhone,
         email: newStudentEmail,
-        role: newStudentRole,
+        address: newStudentAddress,
       });
       ToastSuccess("Student added successfully.");
       setNewStudentName("");
       setNewStudentPhone("");
       setNewStudentEmail("");
+      setNewStudentAddress("");
       closeAddModal();
       fetchStudents();
     } catch (error: any) {
       ToastError(error.response.data.message);
     }
   };
+
+  const editStudentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!editName) {
+      ToastError("Please fill in the name.");
+      return;
+    }
+    try {
+      await axiosPrivate.put(`/student/${editStudentId}`, {
+        name: editName,
+        address: editAddress,
+      });
+      ToastSuccess("Student updated successfully.");
+      setEditName("");
+      setEditAddress("");
+      closeAddModal();
+      setStudents((prev) =>
+        prev.map((student) =>
+          student?.id === editStudentId
+            ? { ...student, name: editName, address: editAddress }
+            : student
+        )
+      );
+      setEditModalOpen(false);
+    } catch (error: any) {
+      ToastError(error.response.data.message);
+    }
+  };
+
   return (
     <div className="w-full bg-white p-6 rounded-lg flex flex-col">
       {/* Add student modal */}
@@ -87,7 +134,9 @@ const Students = () => {
           <h2 className="text-center text-xl font-semibold">Add Student</h2>
           <form onSubmit={addStudentSubmit} className="min-w-[400px]">
             <div className="mb-4">
-              <label className="block mb-2 font-semibold shad">Name</label>
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Name <LuAsterisk color="red" />
+              </label>
               <input
                 value={newStudentName}
                 onChange={(e) => setNewStudentName(e.target.value)}
@@ -96,7 +145,9 @@ const Students = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-2 font-semibold shad">Phone</label>
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Phone <LuAsterisk color="red" />
+              </label>
               <input
                 value={newStudentPhone}
                 onChange={(e) => setNewStudentPhone(e.target.value)}
@@ -105,7 +156,9 @@ const Students = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-2 font-semibold shad">Email</label>
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Email <LuAsterisk color="red" />
+              </label>
               <input
                 value={newStudentEmail}
                 onChange={(e) => setNewStudentEmail(e.target.value)}
@@ -114,12 +167,13 @@ const Students = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-2 font-semibold shad">Role</label>
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Address
+              </label>
               <input
-                value={newStudentRole}
-                onChange={(e) => setNewStudentRole(e.target.value)}
+                value={newStudentAddress}
+                onChange={(e) => setNewStudentAddress(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                required
               />
             </div>
             <div className="flex gap-4">
@@ -134,6 +188,53 @@ const Students = () => {
                 className="w-full bg-indigo-500 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-600 mb-4 hover:cursor-pointer"
               >
                 Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      {/* Edit student */}
+      <Modal
+        isOpen={editModalOpen}
+        onRequestClose={() => setEditModalOpen(false)}
+        style={customStyles}
+        contentLabel="Edit Student"
+      >
+        <div className="flex flex-col items-center ">
+          <h2 className="text-center text-xl font-semibold">Edit Student</h2>
+          <form onSubmit={editStudentSubmit} className="min-w-[400px]">
+            <div className="mb-4">
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Name <LuAsterisk color="red" />
+              </label>
+              <input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2 font-semibold shad">Address</label>
+              <input
+                value={editAddress}
+                onChange={(e) => setEditAddress(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={closeEditModal}
+                className="w-full bg-gray-300 text-black font-semibold py-2 px-4 rounded hover:bg-gray-400 mb-4"
+              >
+                Close
+              </button>
+              <button
+                type="submit"
+                className="w-full bg-indigo-500 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-600 mb-4 hover:cursor-pointer"
+              >
+                Save
               </button>
             </div>
           </form>
@@ -158,8 +259,8 @@ const Students = () => {
             <th className="py-2 px-4 border-b">Name</th>
             <th className="py-2 px-4 border-b">Phone</th>
             <th className="py-2 px-4 border-b">Email</th>
-            <th className="py-2 px-4 border-b">Role</th>
             <th className="py-2 px-4 border-b">Verified</th>
+            <th className="py-2 px-4 border-b">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -172,15 +273,23 @@ const Students = () => {
               <td className="py-2 px-4 border-b text-center">
                 {student.email}
               </td>
-              <td className="py-2 px-4 border-b text-center">
-                {student.studentRole}
-              </td>
               <td className="py-2 px-4 border-b">
                 {student.isVerified ? (
                   <FaCircleCheck color="green" className="mx-auto" size={20} />
                 ) : (
                   <FaCircleXmark color="red" className="mx-auto" size={20} />
                 )}
+              </td>
+              <td className="py-2 px-4 border-b text-center">
+                <button
+                  className="text-white bg-blue-700 px-2 py-1 rounded hover:bg-blue-800 mr-2 hover:cursor-pointer"
+                  onClick={() => openEditModal(student)}
+                >
+                  Edit
+                </button>
+                <button className="text-white bg-red-700 px-2 py-1 rounded hover:bg-red-800 hover:cursor-pointer">
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

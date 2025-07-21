@@ -3,7 +3,7 @@ import { UserRole } from "~/store/AuthContext";
 import { HOST } from "~/utils/constants";
 
 export interface LoginUser {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   role: UserRole;
@@ -26,14 +26,24 @@ export interface ReqLogin {
 }
 
 export interface ReqLoginByAccount {
-  email: string;
+  username: string;
   password: string;
+}
+
+export interface ReqCreateInstructor {
+  email: string;
+  phone: string;
+  name: string;
 }
 
 export const validateAccessCodeApi = async (
   body: ReqLogin
 ): Promise<{ data: LoginUser }> =>
   await axios.post(`${HOST}/validateAccessCode`, body);
+
+export const createInstructorApi = async (
+  body: ReqCreateInstructor
+): Promise<void> => await axios.post(`${HOST}/createInstructor`, body);
 
 export const loginByAccountApi = async (
   body: ReqLoginByAccount

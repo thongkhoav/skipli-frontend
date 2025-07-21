@@ -17,7 +17,7 @@ export enum UserRole {
 export const AuthContext = createContext<IAuthContext>({
   token: "",
   userGlobal: {
-    _id: "",
+    id: "",
     name: "",
     email: "",
     phone: "",

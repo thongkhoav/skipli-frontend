@@ -62,11 +62,11 @@ function AuthProvider({ children }: any) {
     }
   };
 
-  const handleLoginByAccount = async (email: string, password: string) => {
+  const handleLoginByAccount = async (username: string, password: string) => {
     try {
       const response = await loginByAccountApi({
         password,
-        email,
+        username,
       });
       console.log({
         type: "after validateAccessCodeApi",

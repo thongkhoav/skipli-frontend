@@ -1,7 +1,7 @@
 export interface Student {
   name: string;
   email: string;
-  studentRole: string;
+  address: string;
   id: string;
   phone: string;
   isVerified: boolean;

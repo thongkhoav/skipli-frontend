@@ -71,12 +71,7 @@ const LoginEmail = () => {
               Send OTP
             </button>
           </form>
-          <Link
-            to={GUEST_PATH.LOGIN_ACCOUNT}
-            className="text-indigo-500 hover:underline"
-          >
-            Login by Account
-          </Link>
+
           <Link
             to={GUEST_PATH.LOGIN_PHONE}
             className="text-gray-600 hover:underline"

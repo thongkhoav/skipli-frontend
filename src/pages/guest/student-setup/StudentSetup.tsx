@@ -16,17 +16,17 @@ const StudentSetup = () => {
     console.log("Token from params:", searchParams.entries());
     if (!searchParams.get("token")) {
       ToastError("Invalid setup link.");
-      navigate(GUEST_PATH.LOGIN_EMAIL);
+      navigate(GUEST_PATH.LOGIN_ACCOUNT);
     } else {
       checkStudentNotSetupApi(searchParams.get("token")!)
         .then((res) => {
           if (!res?.data?.isNotSetup) {
             ToastError("You have already setup your account.");
-            navigate(GUEST_PATH.LOGIN_EMAIL);
+            navigate(GUEST_PATH.LOGIN_ACCOUNT);
           }
         })
         .catch(() => {
-          navigate(GUEST_PATH.LOGIN_EMAIL);
+          navigate(GUEST_PATH.LOGIN_ACCOUNT);
         });
     }
   }, []);
@@ -57,7 +57,7 @@ const StudentSetup = () => {
         password,
       });
       ToastSuccess("Account setup successful!");
-      navigate("/login-email");
+      navigate(GUEST_PATH.LOGIN_ACCOUNT);
     } catch (error: any) {
       ToastError(error.response.data.message);
     }
