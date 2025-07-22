@@ -1,69 +1,124 @@
-# React + TypeScript + Vite
+# 📚 Classroom App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern classroom management application built with **React (Vite + TypeScript)** and styled using **Tailwind CSS**. This app facilitates communication and lesson tracking between instructors and students, with secure authentication and real-time chat powered by **Socket.IO**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tech Stack
 
-## Expanding the ESLint configuration
+| Feature         | Technology                   |
+| --------------- | ---------------------------- |
+| Frontend        | React (Vite + TypeScript)    |
+| Styling         | Tailwind CSS                 |
+| Chat Service    | Socket.IO                    |
+| Authentication  | Access Token + Refresh Token |
+| Node.js Version | 22.16.0                      |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🔐 Authentication Flow
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- The app uses **Access Token and Refresh Token** for secure authentication.
+- Only **US phone numbers** are supported for instructor login.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🧑‍🏫 Instructor Flow
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. **Signup**
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   - Provide name, email, and **US phone number**.
+
+2. **Login**
+
+   - Receive access code via phone and use it to log in.
+
+3. **Student Management**
+
+   - Add student using: name, email, phone, address.
+   - A setup link is sent to the student's email.
+   - View student list.
+   - Edit student details (name and address).
+   - Remove student from class.
+
+4. **Lesson Management**
+
+   - Assign lessons to students.
+   - View assigned lessons.
+
+5. **Chat**
+
+   - One-on-one chat with each student using **Socket.IO**.
+
+6. **Profile Management**
+   - Update personal profile information.
+
+![Instructor-Signup](./app-screenshots/instructor-signup.png)
+![Instructor-Login](./app-screenshots/instructor-login.png)
+![Instructor-Students](./app-screenshots/instructor-students.png)
+![Instructor-Lessons](./app-screenshots/instructor-lessons.png)
+![Instructor-Chat](./app-screenshots/instructor-chat.png)
+![Instructor-profile](./app-screenshots/instructor-profile.png)
+
+---
+
+## 🧑‍🎓 Student Flow
+
+1. **Setup Account**
+
+   - Use the setup link received via email to create an account.
+   - Set username and password.
+
+2. **Lesson Management**
+
+   - View assigned lessons.
+   - Update lesson statuses.
+
+3. **Chat**
+
+   - Chat one-on-one with the instructor.
+
+4. **Profile Management**
+   - Update personal profile information.
+
+![Student-Login](./app-screenshots/student-login.png)
+![Student-Lessons](./app-screenshots/student-lessons.png)
+![Student-Chat](./app-screenshots/student-chat.png)
+![Student-Profile](./app-screenshots/student-profile.png)
+
+---
+
+## 📦 Project Structure: Use src folder as parent
+
+- apis: API definitions and service functions
+- assets: Static assets (images, icons, etc.)
+- axios: Axios configuration (base URL, interceptors)
+- components: Reusable UI components
+- layout: Shared layout components (headers, wrappers, etc.)
+- pages: Application pages (guest and authenticated views)
+- routes: Application route definitions
+- sockets: Socket.IO configuration
+- store: Global state management (via useContext)
+- utils: Helper functions, constants, and TypeScript types
+
+## 📄 Setup Instructions
+
+### 1. Prerequisites
+
+- Node.js v22.16.0
+- npm
+
+### 2. Install dependencies
+
+- npm install
+
+### 3. Add .env file
+
+- Follow .env.example
+
+### 4. Run the app: 2 options
+
+- Run development mode: npm run dev
+- Build and preview:
+  - npm run build
+  - npm run preview

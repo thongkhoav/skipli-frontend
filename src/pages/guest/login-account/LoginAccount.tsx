@@ -84,7 +84,7 @@ const LoginAccount = () => {
           </button>
         </form>
         <Link
-          to={GUEST_PATH.LOGIN_EMAIL}
+          to={GUEST_PATH.LOGIN_PHONE}
           className="text-indigo-500 hover:underline"
         >
           Instructor Login

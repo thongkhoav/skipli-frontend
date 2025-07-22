@@ -26,7 +26,7 @@ export const AuthContext = createContext<IAuthContext>({
     refreshToken: "",
   },
   setUserGlobal: () => {},
-  onLogin: (phone: string, accessCode: string, email: string) => {},
-  onLoginByAccount: (email: string, password: string) => {},
+  onLogin: () => {},
+  onLoginByAccount: () => {},
   onLogout: () => {},
 });
