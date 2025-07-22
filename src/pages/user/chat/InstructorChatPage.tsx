@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import useAxiosPrivate from "~/axios/useAxiosPrivate";
-import { socket } from "~/sockets/socket";
+import { socketConfig } from "~/sockets/socket";
 import { useAuth } from "~/utils/helpers";
 import { InstructorChat } from "~/utils/types/instructor-chat.type";
 import { Message } from "~/utils/types/message.type";
@@ -22,47 +22,84 @@ const InstructorChatPage = () => {
     }
   }, []);
 
+  const fetchMessages = useCallback(async (chatId: string) => {
+    try {
+      const response = await axiosPrivate.get(`/messages?chatId=${chatId}`);
+      setMessageList(response?.data?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch messages", error);
+    }
+  }, []);
+
   // Fetch chat list
   useEffect(() => {
     fetchChatList();
-
-    // Register your user ID after connecting
-    socket.on("connect", () => {
-      socket.emit("register", userGlobal?.id);
-    });
-
+    if (socketConfig.connected) {
+      socketConfig.emit("register", userGlobal?.id);
+    }
     // Receive a message
-    socket.on("private_message", ({ from, content, to }) => {
-      setMessageList((prev) => [...prev, { content, from, to }]);
+    socketConfig.on("private_message", ({ from, content, to }) => {
+      addNewMessage({ from, content, to });
     });
 
     return () => {
-      socket.off("connect");
-      socket.off("private_message");
+      socketConfig.off("connect");
+      socketConfig.off("private_message");
     };
-  }, []);
+  }, [userGlobal?.id]);
+
+  const addNewMessage = ({
+    content,
+    from,
+    to,
+  }: {
+    content: string;
+    from: string;
+    to: string;
+  }) => {
+    setMessageList((prev) => [...prev, { content, from, to }]);
+    const messageListElement = document.getElementById("message-list");
+    if (messageListElement) {
+      setTimeout(() => {
+        //scroll smoothly
+        messageListElement.scrollTo({
+          top: messageListElement.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 100);
+    }
+  };
 
   const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!currentChat || !inputMessage.trim()) return;
     try {
-      socket.emit("private_message", {
+      console.log("Sending message:", {
         to: currentChat.student.id,
         from: userGlobal?.id,
         message: inputMessage,
+        conversationId: currentChat?.id,
       });
-      setMessageList((prev) => [
-        ...prev,
-        {
-          content: inputMessage,
-          from: userGlobal?.id,
-          to: currentChat.student.id,
-        },
-      ]);
+      socketConfig.emit("private_message", {
+        to: currentChat.student.id,
+        from: userGlobal?.id,
+        content: inputMessage,
+        conversationId: currentChat?.id,
+      });
+      addNewMessage({
+        content: inputMessage,
+        from: userGlobal?.id,
+        to: currentChat.student.id,
+      });
       setInputMessage("");
     } catch (error) {
       console.error("Error sending message", error);
     }
+  };
+
+  const handleChatSelect = async (chat: InstructorChat) => {
+    setCurrentChat(chat);
+    await fetchMessages(chat.id);
   };
 
   return (
@@ -77,7 +114,7 @@ const InstructorChatPage = () => {
               className={`p-4 cursor-pointer rounded-xl bg-slate-200 hover:bg-slate-300 mb-2 ${
                 currentChat?.id === chat?.id && "bg-slate-500 text-white"
               }`}
-              onClick={() => setCurrentChat(chat)}
+              onClick={() => handleChatSelect(chat)}
             >
               {chat?.student?.name}
             </li>
@@ -103,25 +140,23 @@ const InstructorChatPage = () => {
           )}
 
           {/* Scrollable messages */}
-          <div className="flex-1 overflow-y-auto bg-white p-4 rounded-lg">
-            {messageList.map((message, index) => (
+          <div
+            className="flex-1 overflow-y-auto bg-white p-4 rounded-lg"
+            id="message-list"
+          >
+            {messageList?.map((message, index) => (
               <div
                 key={index}
-                className={`mb-2 p-2 rounded-lg ${
-                  message.from === userGlobal?.id
-                    ? "bg-blue-100 text-right"
-                    : "bg-gray-100 text-left"
+                className={`mb-2 p-2 rounded-lg w-2/5 ${
+                  message?.from === userGlobal?.id
+                    ? "bg-blue-200 ml-auto"
+                    : "bg-gray-200"
                 }`}
               >
-                <p className="text-sm">{message.content}</p>
-                <span className="text-xs text-gray-500">
-                  {message.from === userGlobal?.id
-                    ? "You"
-                    : currentChat?.student.name}
-                </span>
+                <p className="text-sm">{message?.content}</p>
               </div>
             ))}
-            {messageList.length === 0 && (
+            {messageList?.length === 0 && (
               <p className="text-gray-500">No messages yet</p>
             )}
           </div>
@@ -132,6 +167,7 @@ const InstructorChatPage = () => {
             onSubmit={handleSendMessage}
           >
             <input
+              value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               type="text"
               placeholder="Type your message..."

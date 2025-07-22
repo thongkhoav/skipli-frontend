@@ -5,6 +5,7 @@ import StudentChatPage from "./StudentChatPage";
 
 const ChatPage = () => {
   const { userGlobal } = useAuth();
+
   return (
     <>
       {userGlobal?.role === UserRole.INSTRUCTOR && <InstructorChatPage />}
