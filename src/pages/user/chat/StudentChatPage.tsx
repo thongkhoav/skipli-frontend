@@ -14,12 +14,36 @@ const StudentChatPage = () => {
 
   const fetchStudentChatRoom = useCallback(async () => {
     try {
-      const response = await axiosPrivate.get("/studentChatRoom");
-      setCurrentChat(response?.data?.data || null);
+      const studentChatResponse = await axiosPrivate.get("/studentChatRoom");
+      const chatRoomData = studentChatResponse?.data?.data;
+      setCurrentChat(chatRoomData || null);
+      console.log("Current chat room:", chatRoomData);
       const messageResponse = await axiosPrivate.get(
-        `/messages?chatId=${response?.data?.data?.id}`
+        `/messages?chatId=${chatRoomData?.id}`
       );
       setMessageList(messageResponse?.data?.data || []);
+      scrollMessageList();
+
+      // setup socket connection
+      if (socketConfig.connected) {
+        socketConfig.emit("register", userGlobal?.id);
+      }
+
+      // Receive a message
+      socketConfig.on(
+        "private_message",
+        ({ from, content, to, conversationId }) => {
+          console.log("Received private message:", {
+            from,
+            content,
+            to,
+            conversationId,
+          });
+          if (chatRoomData?.id === conversationId) {
+            addNewMessage({ content, from, to });
+          }
+        }
+      );
     } catch (error) {
       console.error("Failed to fetch chat list", error);
     }
@@ -28,19 +52,6 @@ const StudentChatPage = () => {
   // Fetch chat list
   useEffect(() => {
     fetchStudentChatRoom();
-    if (socketConfig.connected) {
-      socketConfig.emit("register", userGlobal?.id);
-    }
-
-    // Receive a message
-    socketConfig.on("private_message", ({ from, content, to }) => {
-      console.log("Received private message:", {
-        from,
-        content,
-        to,
-      });
-      addNewMessage({ content, from, to });
-    });
 
     return () => {
       socketConfig.off("connect");
@@ -58,6 +69,10 @@ const StudentChatPage = () => {
     to: string;
   }) => {
     setMessageList((prev) => [...prev, { content, from, to }]);
+    scrollMessageList();
+  };
+
+  const scrollMessageList = () => {
     const messageListElement = document.getElementById("message-list");
     if (messageListElement) {
       setTimeout(() => {
@@ -104,7 +119,7 @@ const StudentChatPage = () => {
         <div className="flex-1 p-4 flex flex-col h-full">
           <div>
             <h2 className="text-lg font-semibold mb-4">
-              Chat with {currentChat.owner}
+              Chat with {currentChat.ownerName || "Instructor"}
             </h2>
           </div>
 

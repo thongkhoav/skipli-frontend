@@ -26,6 +26,7 @@ const InstructorChatPage = () => {
     try {
       const response = await axiosPrivate.get(`/messages?chatId=${chatId}`);
       setMessageList(response?.data?.data || []);
+      scrollMessageList();
     } catch (error) {
       console.error("Failed to fetch messages", error);
     }
@@ -33,20 +34,42 @@ const InstructorChatPage = () => {
 
   // Fetch chat list
   useEffect(() => {
-    fetchChatList();
-    if (socketConfig.connected) {
-      socketConfig.emit("register", userGlobal?.id);
-    }
-    // Receive a message
-    socketConfig.on("private_message", ({ from, content, to }) => {
-      addNewMessage({ from, content, to });
-    });
+    const setup = async () => {
+      await fetchChatList();
+      if (socketConfig.connected) {
+        socketConfig.emit("register", userGlobal?.id);
+      }
+    };
+    setup();
 
     return () => {
       socketConfig.off("connect");
       socketConfig.off("private_message");
     };
   }, [userGlobal?.id]);
+
+  useEffect(() => {
+    console.log("Current chat room:", currentChat);
+    if (currentChat && currentChat?.id) {
+      // clear private_message listener before setting a new one
+      socketConfig.off("private_message");
+      socketConfig.on(
+        "private_message",
+        ({ from, content, to, conversationId }) => {
+          console.log("instructor Received private message:", {
+            from,
+            content,
+            to,
+            conversationId,
+            currentChat: currentChat?.id,
+          });
+          if (currentChat?.id === conversationId) {
+            addNewMessage({ content, from, to });
+          }
+        }
+      );
+    }
+  }, [currentChat]);
 
   const addNewMessage = ({
     content,
@@ -58,6 +81,10 @@ const InstructorChatPage = () => {
     to: string;
   }) => {
     setMessageList((prev) => [...prev, { content, from, to }]);
+    scrollMessageList();
+  };
+
+  const scrollMessageList = () => {
     const messageListElement = document.getElementById("message-list");
     if (messageListElement) {
       setTimeout(() => {

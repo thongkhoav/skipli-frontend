@@ -21,6 +21,7 @@ const Students = () => {
   const axiosPrivate = useAxiosPrivate();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [studentCreating, setStudentCreating] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
   const [newStudentPhone, setNewStudentPhone] = useState("");
   const [newStudentEmail, setNewStudentEmail] = useState("");
@@ -29,6 +30,9 @@ const Students = () => {
   const [editName, setEditName] = useState("");
   const [editAddress, setEditAddress] = useState("");
   const [students, setStudents] = useState<Student[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteStudent, setDeleteStudent] = useState<Student | null>(null);
+  const [isStudentDeleting, setIsStudentDeleting] = useState(false);
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -43,9 +47,9 @@ const Students = () => {
     fetchStudents();
   }, []);
 
-  function openAddModal() {
+  const openAddModal = () => {
     setAddModalOpen(true);
-  }
+  };
 
   const openEditModal = (student: Student) => {
     setEditStudentId(student?.id);
@@ -54,19 +58,29 @@ const Students = () => {
     setEditModalOpen(true);
   };
 
-  function closeAddModal() {
+  const openDeleteModal = (student: Student) => {
+    setDeleteStudent(student);
+    setDeleteModalOpen(true);
+  };
+
+  const closeAddModal = () => {
     setAddModalOpen(false);
     setNewStudentName("");
     setNewStudentPhone("");
     setNewStudentEmail("");
     setNewStudentAddress("");
-  }
+  };
 
-  function closeEditModal() {
+  const closeEditModal = () => {
     setEditModalOpen(false);
     setEditName("");
     setEditAddress("");
-  }
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setDeleteStudent(null);
+  };
 
   const addStudentSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,6 +89,7 @@ const Students = () => {
       return;
     }
     try {
+      setStudentCreating(true);
       await axiosPrivate.post(`/addStudent`, {
         name: newStudentName,
         phone: newStudentPhone,
@@ -90,6 +105,8 @@ const Students = () => {
       fetchStudents();
     } catch (error: any) {
       ToastError(error.response.data.message);
+    } finally {
+      setStudentCreating(false);
     }
   };
 
@@ -121,8 +138,59 @@ const Students = () => {
     }
   };
 
+  const deleteStudentHandler = async () => {
+    if (!deleteStudent || !deleteStudent?.id) {
+      ToastError("No student selected.");
+      return;
+    }
+    try {
+      setIsStudentDeleting(true);
+      await axiosPrivate.delete(`/student/${deleteStudent?.id}`);
+      ToastSuccess("Student deleted successfully.");
+      closeDeleteModal();
+      setStudents((prev) =>
+        prev.filter((student) => student?.id !== deleteStudent?.id)
+      );
+      setDeleteModalOpen(false);
+      setDeleteStudent(null);
+      setIsStudentDeleting(false);
+    } catch (error: any) {
+      ToastError(error.response.data.message);
+    }
+  };
+
   return (
     <div className="w-full bg-white p-6 rounded-lg flex flex-col">
+      {/* Delete student */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onRequestClose={closeDeleteModal}
+        style={customStyles}
+        contentLabel="Delete Student"
+      >
+        <div className="flex flex-col items-center">
+          <h2 className="text-center text-xl font-semibold">Delete Student</h2>
+          <p>
+            Are you sure you want to delete student "
+            <b>{deleteStudent?.name}</b>"?
+          </p>
+          <div className="flex justify-center mt-4 space-x-4">
+            <button
+              onClick={closeDeleteModal}
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={deleteStudentHandler}
+              disabled={isStudentDeleting}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </Modal>
       {/* Add student modal */}
       <Modal
         isOpen={addModalOpen}
@@ -160,6 +228,7 @@ const Students = () => {
                 Email <LuAsterisk color="red" />
               </label>
               <input
+                type="email"
                 value={newStudentEmail}
                 onChange={(e) => setNewStudentEmail(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
@@ -185,7 +254,8 @@ const Students = () => {
               </button>
               <button
                 type="submit"
-                className="w-full bg-indigo-500 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-600 mb-4 hover:cursor-pointer"
+                disabled={studentCreating}
+                className="w-full bg-indigo-500 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-600 mb-4 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add
               </button>
@@ -240,13 +310,15 @@ const Students = () => {
           </form>
         </div>
       </Modal>
-      <h1>Manage Students</h1>
+
       <div className="flex justify-between items-center mb-4">
-        <span>{students.length} students</span>
+        <h1 className="text-2xl font-semibold">
+          Manage Students ({students.length})
+        </h1>
         <button
           onClick={openAddModal}
           className="
-          bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4 w-fit ml-auto"
+          bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4 w-fit ml-auto hover:cursor-pointer"
         >
           Add Student
         </button>
@@ -265,16 +337,18 @@ const Students = () => {
         </thead>
         <tbody>
           {students?.map((student) => (
-            <tr key={student.email}>
-              <td className="py-2 px-4 border-b text-center">{student.name}</td>
+            <tr key={student?.email}>
               <td className="py-2 px-4 border-b text-center">
-                {student.phone}
+                {student?.name}
               </td>
               <td className="py-2 px-4 border-b text-center">
-                {student.email}
+                {student?.phone}
+              </td>
+              <td className="py-2 px-4 border-b text-center">
+                {student?.email}
               </td>
               <td className="py-2 px-4 border-b">
-                {student.isVerified ? (
+                {student?.isVerified ? (
                   <FaCircleCheck color="green" className="mx-auto" size={20} />
                 ) : (
                   <FaCircleXmark color="red" className="mx-auto" size={20} />
@@ -287,7 +361,10 @@ const Students = () => {
                 >
                   Edit
                 </button>
-                <button className="text-white bg-red-700 px-2 py-1 rounded hover:bg-red-800 hover:cursor-pointer">
+                <button
+                  className="text-white bg-red-700 px-2 py-1 rounded hover:bg-red-800 hover:cursor-pointer"
+                  onClick={() => openDeleteModal(student)}
+                >
                   Delete
                 </button>
               </td>

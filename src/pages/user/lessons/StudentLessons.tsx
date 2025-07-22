@@ -65,12 +65,12 @@ const StudentLessons = () => {
 
   return (
     <div className="w-full bg-white p-6 rounded-lg flex flex-col gap-4">
-      {/* Add student modal */}
+      {/* Mark done */}
       <Modal
         isOpen={markDoneModalOpen}
         onRequestClose={closeMarkDoneModal}
         style={customStyles}
-        contentLabel="Add Student"
+        contentLabel="Mark Lesson as Done"
       >
         <div className="flex flex-col items-center">
           <h2 className="text-center text-xl font-semibold">

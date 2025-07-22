@@ -29,7 +29,7 @@ const InstructorLessons = () => {
       const response = await axiosPrivate.get("/students");
       setStudents(response?.data?.data);
     } catch (error: any) {
-      ToastError(error.response.data.message);
+      console.log(error);
     }
   }, [axiosPrivate]);
 
@@ -38,7 +38,7 @@ const InstructorLessons = () => {
       const response = await axiosPrivate.get("/lessons");
       setLessons(response?.data?.data);
     } catch (error: any) {
-      ToastError(error.response.data.message);
+      console.log(error);
     }
   }, [axiosPrivate]);
 
