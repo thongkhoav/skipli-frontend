@@ -5,6 +5,7 @@ import useAxiosPrivate from "~/axios/useAxiosPrivate";
 import { Student } from "~/utils/types/student.type";
 import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
 import { LuAsterisk } from "react-icons/lu";
+import USA from "~/assets/usa-icon.png";
 
 const customStyles = {
   content: {
@@ -223,12 +224,20 @@ const Students = () => {
               <label className=" mb-2 font-semibold shad flex items-center">
                 Phone <LuAsterisk color="red" />
               </label>
-              <input
-                value={newStudentPhone}
-                onChange={onChangeNewStudentPhone}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                required
-              />
+              <div className="flex items-center gap-4 border border-gray-300 rounded w-full">
+                <div className="text-gray-500 flex gap-2 font-semibold items-center p-2 bg-gray-200 w-fit">
+                  <img src={USA} alt="" className="w-6 h-6" />
+                  <div>+1</div>
+                </div>
+                <input
+                  onChange={onChangeNewStudentPhone}
+                  value={newStudentPhone}
+                  maxLength={10}
+                  required
+                  className="focus:outline-none flex-1 pr-4"
+                  placeholder="2125551212"
+                />
+              </div>
             </div>
             <div className="mb-4">
               <label className=" mb-2 font-semibold shad flex items-center">
@@ -332,53 +341,63 @@ const Students = () => {
       </div>
 
       {/* student table */}
-      <table className="min-w-full bg-white">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="py-2 px-4 border-b">Name</th>
-            <th className="py-2 px-4 border-b">Phone</th>
-            <th className="py-2 px-4 border-b">Email</th>
-            <th className="py-2 px-4 border-b">Verified</th>
-            <th className="py-2 px-4 border-b">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students?.map((student) => (
-            <tr key={student?.email}>
-              <td className="py-2 px-4 border-b text-center">
-                {student?.name}
-              </td>
-              <td className="py-2 px-4 border-b text-center">
-                {student?.phone.replace(/\+1/, "")}
-              </td>
-              <td className="py-2 px-4 border-b text-center">
-                {student?.email}
-              </td>
-              <td className="py-2 px-4 border-b">
-                {student?.isVerified ? (
-                  <FaCircleCheck color="green" className="mx-auto" size={20} />
-                ) : (
-                  <FaCircleXmark color="red" className="mx-auto" size={20} />
-                )}
-              </td>
-              <td className="py-2 px-4 border-b text-center">
-                <button
-                  className="text-white bg-blue-700 px-2 py-1 rounded hover:bg-blue-800 mr-2 hover:cursor-pointer"
-                  onClick={() => openEditModal(student)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="text-white bg-red-700 px-2 py-1 rounded hover:bg-red-800 hover:cursor-pointer"
-                  onClick={() => openDeleteModal(student)}
-                >
-                  Delete
-                </button>
-              </td>
+      {students?.length > 0 ? (
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="py-2 px-4 border-b">Name</th>
+              <th className="py-2 px-4 border-b">Phone</th>
+              <th className="py-2 px-4 border-b">Email</th>
+              <th className="py-2 px-4 border-b">Verified</th>
+              <th className="py-2 px-4 border-b">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {students?.map((student) => (
+              <tr key={student?.email}>
+                <td className="py-2 px-4 border-b text-center">
+                  {student?.name}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {student?.phone.replace(/\+1/, "")}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {student?.email}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {student?.isVerified ? (
+                    <FaCircleCheck
+                      color="green"
+                      className="mx-auto"
+                      size={20}
+                    />
+                  ) : (
+                    <FaCircleXmark color="red" className="mx-auto" size={20} />
+                  )}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  <button
+                    className="text-white bg-blue-700 px-2 py-1 rounded hover:bg-blue-800 mr-2 hover:cursor-pointer"
+                    onClick={() => openEditModal(student)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="text-white bg-red-700 px-2 py-1 rounded hover:bg-red-800 hover:cursor-pointer"
+                    onClick={() => openDeleteModal(student)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="text-center text-gray-500 mt-4">
+          No students found. Please add a student.
+        </div>
+      )}
     </div>
   );
 };

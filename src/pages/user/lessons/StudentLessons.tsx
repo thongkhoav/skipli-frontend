@@ -77,19 +77,19 @@ const StudentLessons = () => {
             Mark Lesson as Done
           </h2>
           <p>
-            Are you sure you want to mark lesson "{selectedLesson?.title}" as
-            done?
+            Are you sure you want to mark lesson "<b>{selectedLesson?.title}</b>
+            " as done?
           </p>
           <div className="flex justify-center mt-4 space-x-4">
             <button
               onClick={closeMarkDoneModal}
-              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={markDoneLessonSubmit}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+              className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-600"
             >
               Confirm
             </button>
@@ -98,40 +98,52 @@ const StudentLessons = () => {
       </Modal>
       <h1 className="text-2xl font-semibold">Your assigned Lessons</h1>
 
-      <table className="min-w-full bg-white">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="py-2 px-4 border-b">Title</th>
-            <th className="py-2 px-4 border-b">Description</th>
-            <th className="py-2 px-4 border-b">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lessons?.map((lesson) => (
-            <tr key={lesson.id}>
-              <td className="py-2 px-4 border-b text-center">{lesson.title}</td>
-              <td className="py-2 px-4 border-b text-center">
-                {lesson.description}
-              </td>
-              <td className="py-2 px-4 border-b text-center max-w-[500px]">
-                {lesson?.isDone ? (
-                  <FaCircleCheck color="green" className="mx-auto" size={20} />
-                ) : (
-                  <button
-                    onClick={() => {
-                      setSelectedLesson(lesson);
-                      openMarkDoneModal();
-                    }}
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-                  >
-                    Done
-                  </button>
-                )}
-              </td>
+      {lessons?.length > 0 ? (
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="py-2 px-4 border-b">Title</th>
+              <th className="py-2 px-4 border-b max-w-2xs">Description</th>
+              <th className="py-2 px-4 border-b">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {lessons?.map((lesson) => (
+              <tr key={lesson.id}>
+                <td className="py-2 px-4 border-b text-center">
+                  {lesson.title}
+                </td>
+                <td className="py-2 px-4 border-b text-center max-w-2xs">
+                  {lesson.description}
+                </td>
+                <td className="py-2 px-4 border-b text-center max-w-[500px]">
+                  {lesson?.isDone ? (
+                    <FaCircleCheck
+                      color="green"
+                      className="mx-auto"
+                      size={20}
+                    />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedLesson(lesson);
+                        openMarkDoneModal();
+                      }}
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="text-center text-gray-500 mt-4">
+          No lessons found. Please contact your instructor to assign lessons.
+        </div>
+      )}
     </div>
   );
 };

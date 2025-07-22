@@ -5,5 +5,5 @@ export interface InstructorChat {
     name: string;
     email: string;
   };
-  lassMessage: string;
+  lastMessage: string;
 }

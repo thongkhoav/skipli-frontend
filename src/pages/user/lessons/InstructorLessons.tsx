@@ -157,12 +157,15 @@ const InstructorLessons = () => {
           </form>
         </div>
       </Modal>
-      <h1 className="text-2xl font-semibold">Manage Lessons</h1>
+
       <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-semibold">
+          Manage Lessons ({lessons?.length})
+        </h1>
         <button
           onClick={openAddModal}
           className="
-          bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mb-4 w-fit ml-auto"
+          bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-fit cursor-pointer"
         >
           Add Lesson
         </button>
@@ -170,37 +173,45 @@ const InstructorLessons = () => {
 
       {/* instructor - lesson table */}
 
-      <table className="min-w-full bg-white">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="py-2 px-4 border-b">Title</th>
-            <th className="py-2 px-4 border-b">Description</th>
-            <th className="py-2 px-4 border-b">Students</th>
-          </tr>
-        </thead>
-        <tbody>
-          {lessons?.map((lesson) => (
-            <tr key={lesson.id}>
-              <td className="py-2 px-4 border-b text-center">{lesson.title}</td>
-              <td className="py-2 px-4 border-b text-center">
-                {lesson.description}
-              </td>
-              <td className="py-2 px-4 border-b text-center max-w-[500px]">
-                {lesson?.students?.map((student) => (
-                  <span
-                    key={student?.id}
-                    className={`inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full mr-2 text-sm ${
-                      student?.isDone && "bg-green-200 text-green-700"
-                    }`}
-                  >
-                    {student?.name}
-                  </span>
-                ))}
-              </td>
+      {lessons?.length > 0 ? (
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="py-2 px-4 border-b">Title</th>
+              <th className="py-2 px-4 border-b max-w-2xs ">Description</th>
+              <th className="py-2 px-4 border-b">Students</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {lessons?.map((lesson) => (
+              <tr key={lesson.id}>
+                <td className="py-2 px-4 border-b text-center">
+                  {lesson.title}
+                </td>
+                <td className="py-2 px-4 border-b text-center max-w-2xs">
+                  {lesson.description}
+                </td>
+                <td className="py-2 px-4 border-b text-center max-w-[500px]">
+                  {lesson?.students?.map((student) => (
+                    <span
+                      key={student?.id}
+                      className={`inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full mr-2 text-sm ${
+                        student?.isDone && "bg-green-200 text-green-700"
+                      }`}
+                    >
+                      {student?.name}
+                    </span>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="text-center text-gray-500 mt-4">
+          No lessons found. Please add a lesson.
+        </div>
+      )}
     </div>
   );
 };

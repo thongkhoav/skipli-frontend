@@ -68,18 +68,18 @@ const LoginPhone = () => {
             <div className="mb-4">
               <label className="block font-semibold shad">Phone</label>
               <span className="text-sm">Only US phone available</span>
-              <div className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 flex items-center gap-4">
-                <div className="text-gray-500 flex gap-2 font-semibold items-center border p-2 border-gray-300 rounded bg-gray-200">
+              <div className="flex items-center gap-4 border border-gray-300 rounded ">
+                <div className="text-gray-500 flex gap-2 font-semibold items-center p-2 bg-gray-200 w-fit">
                   <img src={USA} alt="" className="w-6 h-6" />
                   <div>+1</div>
                 </div>
                 <input
-                  value={phone}
-                  max={10}
                   onChange={onChangePhone}
-                  placeholder="2125551212"
-                  className=" py-2 focus:outline-none "
+                  value={phone}
+                  maxLength={10}
                   required
+                  className="focus:outline-none flex-1 pr-4"
+                  placeholder="2125551212"
                 />
               </div>
             </div>
@@ -92,13 +92,13 @@ const LoginPhone = () => {
           </form>
           <Link
             to={GUEST_PATH.CREATE_INSTRUCTOR}
-            className="text-indigo-500 hover:underline"
+            className="text-blue-500 hover:underline"
           >
             Instructor Signup
           </Link>
           <Link
             to={GUEST_PATH.LOGIN_ACCOUNT}
-            className="text-indigo-500 hover:underline"
+            className="text-blue-500 hover:underline"
           >
             Student Login
           </Link>
@@ -115,8 +115,8 @@ const LoginPhone = () => {
               <input
                 type="text"
                 value={otpCode}
-                min={6}
-                max={6}
+                minLength={6}
+                maxLength={6}
                 onChange={onChangeOtpCode}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                 required

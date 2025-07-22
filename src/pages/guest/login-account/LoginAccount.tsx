@@ -50,7 +50,7 @@ const LoginAccount = () => {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="max-w-md w-full bg-white p-6 rounded-lg flex flex-col items-center shadow-box">
         <h1 className="text-2xl font-bold mb-8">Student Login</h1>
-        <form onSubmit={formSubmit} className="w-60">
+        <form onSubmit={formSubmit} className="w-100">
           <div className="mb-4">
             <label className="block mb-2 font-semibold shad">Username</label>
             <input
@@ -61,11 +61,15 @@ const LoginAccount = () => {
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold shad">Password</label>
+          <div className="mb-4 flex flex-col">
+            <label className="block font-semibold shad">Password</label>
+            <span className="text-sm">
+              Password must be at least 6 characters long.
+            </span>
             <input
               type="password"
               onChange={onChangePassword}
+              minLength={6}
               value={password}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
               required

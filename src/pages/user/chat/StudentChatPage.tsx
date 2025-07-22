@@ -17,7 +17,6 @@ const StudentChatPage = () => {
       const studentChatResponse = await axiosPrivate.get("/studentChatRoom");
       const chatRoomData = studentChatResponse?.data?.data;
       setCurrentChat(chatRoomData || null);
-      console.log("Current chat room:", chatRoomData);
       const messageResponse = await axiosPrivate.get(
         `/messages?chatId=${chatRoomData?.id}`
       );
@@ -33,12 +32,6 @@ const StudentChatPage = () => {
       socketConfig.on(
         "private_message",
         ({ from, content, to, conversationId }) => {
-          console.log("Received private message:", {
-            from,
-            content,
-            to,
-            conversationId,
-          });
           if (chatRoomData?.id === conversationId) {
             addNewMessage({ content, from, to });
           }
@@ -88,12 +81,7 @@ const StudentChatPage = () => {
   const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!currentChat || !inputMessage.trim()) return;
-    console.log("student sending message", {
-      to: currentChat.owner,
-      from: userGlobal?.id,
-      content: inputMessage,
-      conversationId: currentChat.id,
-    });
+
     try {
       socketConfig.emit("private_message", {
         to: currentChat?.owner,
@@ -103,7 +91,7 @@ const StudentChatPage = () => {
       });
       addNewMessage({
         content: inputMessage,
-        from: userGlobal?.id,
+        from: userGlobal?.id as string,
         to: currentChat.owner,
       });
       setInputMessage("");

@@ -5,6 +5,7 @@ import { useAuth } from "~/utils/helpers";
 import { UserProfile } from "~/utils/types/user.type";
 import { LuAsterisk } from "react-icons/lu";
 import { UserRole } from "~/store/AuthContext";
+import USA from "~/assets/usa-icon.png";
 
 const ProfilePage = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -94,12 +95,20 @@ const ProfilePage = () => {
               <label className=" mb-2 font-semibold shad flex items-center">
                 Phone <LuAsterisk color="red" />
               </label>
-              <input
-                onChange={onChangePhone}
-                value={userForm?.phone || ""}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-                required
-              />
+              <div className="flex items-center gap-4 border border-gray-300 rounded ">
+                <div className="text-gray-500 flex gap-2 font-semibold items-center p-2 bg-gray-200 w-fit">
+                  <img src={USA} alt="" className="w-6 h-6" />
+                  <div>+1</div>
+                </div>
+                <input
+                  onChange={onChangePhone}
+                  value={userForm?.phone || ""}
+                  maxLength={10}
+                  required
+                  className="focus:outline-none"
+                  placeholder="2125551212"
+                />
+              </div>
             </div>
             <div className="mb-4">
               <label className=" mb-2 font-semibold shad flex items-center">

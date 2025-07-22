@@ -28,17 +28,10 @@ function AuthProvider({ children }: any) {
 
   const fetchProfile = useCallback(async () => {
     const userData = getUserData();
-    console.log({
-      type: "before getProfile",
-      userData,
-      localAccessToken,
-    });
+
     if (userData && userData?.accessToken && userData?.refreshToken) {
       const getProfileResponse = await axiosPrivate.get("/getProfile");
-      console.log({
-        type: "after getProfile",
-        getProfileResponse,
-      });
+
       setUserGlobal({
         ...getProfileResponse.data,
         accessToken: userData.accessToken,
@@ -49,21 +42,13 @@ function AuthProvider({ children }: any) {
 
   const fetProfileAfterLogin = useCallback(
     async (accessToken: string, refreshToken: string) => {
-      console.log({
-        type: "before getProfile",
-        accessToken,
-        refreshToken,
-      });
       const getProfileResponse = await axios.get(getBaseUrl() + "/getProfile", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         withCredentials: true,
       });
-      console.log({
-        type: "after getProfile",
-        getProfileResponse,
-      });
+
       setUserGlobal({
         ...getProfileResponse.data,
         accessToken: accessToken,
@@ -84,10 +69,7 @@ function AuthProvider({ children }: any) {
         accessCode,
         email,
       });
-      console.log({
-        type: "after validateAccessCodeApi",
-        data: response.data,
-      });
+
       setUserData(response.data);
       await fetProfileAfterLogin(
         response.data.accessToken,
@@ -100,7 +82,7 @@ function AuthProvider({ children }: any) {
       }
       ToastSuccess("Login successful!");
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       toast.error(error.response.data.message);
     }
   };
@@ -111,10 +93,7 @@ function AuthProvider({ children }: any) {
         password,
         username,
       });
-      console.log({
-        type: "after validateAccessCodeApi",
-        response,
-      });
+
       setUserData(response.data);
       await fetProfileAfterLogin(
         response.data.accessToken,
@@ -127,19 +106,15 @@ function AuthProvider({ children }: any) {
       }
       ToastSuccess("Login successful!");
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       toast.error(error.response.data.message);
     }
   };
 
   const handleLogout = async () => {
-    try {
-      clearUserData();
-      setUserGlobal(null);
-      navigate(GUEST_PATH.LOGIN_PHONE);
-    } catch (error: any) {
-      console.log(error);
-    }
+    clearUserData();
+    setUserGlobal(null);
+    navigate(GUEST_PATH.LOGIN_PHONE);
   };
 
   const value = useMemo(

@@ -49,20 +49,12 @@ const InstructorChatPage = () => {
   }, [userGlobal?.id]);
 
   useEffect(() => {
-    console.log("Current chat room:", currentChat);
     if (currentChat && currentChat?.id) {
       // clear private_message listener before setting a new one
       socketConfig.off("private_message");
       socketConfig.on(
         "private_message",
         ({ from, content, to, conversationId }) => {
-          console.log("instructor Received private message:", {
-            from,
-            content,
-            to,
-            conversationId,
-            currentChat: currentChat?.id,
-          });
           if (currentChat?.id === conversationId) {
             addNewMessage({ content, from, to });
           }
@@ -101,12 +93,6 @@ const InstructorChatPage = () => {
     event.preventDefault();
     if (!currentChat || !inputMessage.trim()) return;
     try {
-      console.log("Sending message:", {
-        to: currentChat.student.id,
-        from: userGlobal?.id,
-        message: inputMessage,
-        conversationId: currentChat?.id,
-      });
       socketConfig.emit("private_message", {
         to: currentChat.student.id,
         from: userGlobal?.id,
@@ -134,19 +120,29 @@ const InstructorChatPage = () => {
       {/* conversation list */}
       <div className="w-1/4 bg-gray-200 p-4">
         <h2 className="text-lg font-semibold mb-4">Conversations</h2>
-        <ul>
-          {chatList?.map((chat) => (
-            <li
-              key={chat.id}
-              className={`p-4 cursor-pointer rounded-xl bg-slate-200 hover:bg-slate-300 mb-2 ${
-                currentChat?.id === chat?.id && "bg-slate-500 text-white"
-              }`}
-              onClick={() => handleChatSelect(chat)}
-            >
-              {chat?.student?.name}
-            </li>
-          ))}
-        </ul>
+        {chatList?.length > 0 ? (
+          <ul>
+            {chatList?.map((chat) => (
+              <li
+                key={chat.id}
+                className={`p-4 flex flex-col gap-1 cursor-pointer rounded-xl bg-slate-300 hover:bg-slate-500 mb-2 ${
+                  currentChat?.id === chat?.id && "bg-slate-500 text-white"
+                }`}
+                onClick={() => handleChatSelect(chat)}
+              >
+                <p> {chat?.student?.name}</p>
+                <p className="text-sm ">
+                  {chat?.lastMessage || "No messages yet"}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-center text-gray-500">
+            No conversations found. <br />
+            Please start a chat with a student.
+          </div>
+        )}
       </div>
 
       {/* chat window */}
