@@ -8,7 +8,8 @@ const Sidebar = () => {
   const currentPath = location.pathname;
   const { userGlobal } = useAuth();
   return (
-    // sidebar with 3 options: Students, Lessons and Chat
+    // sidebar with 4 options: Students, Lessons, Chat, Profile
+    // show Students if user is instructor
     <aside className="w-64 bg-gray-100 h-screen p-4">
       <nav className="flex flex-col space-y-4">
         <p className="text-xl font-semibold mb-12">Dashboard</p>
