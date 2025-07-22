@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, IAuthContext } from "./AuthContext";
 import {
@@ -7,28 +7,71 @@ import {
   getUserData,
   setUserData,
 } from "~/utils/helpers/auth";
-import { USER_PATH, GUEST_PATH } from "~/utils/constants";
+import { USER_PATH, GUEST_PATH, getBaseUrl } from "~/utils/constants";
 import { toast } from "react-toastify";
 import { loginByAccountApi, validateAccessCodeApi } from "../apis/user.api";
 import { UserRole } from "~/store/AuthContext";
 import { ToastSuccess } from "~/components/Toast/Toast";
+import useAxiosPrivate from "~/axios/useAxiosPrivate";
+import { UserProfile } from "~/utils/types/user.type";
+import axios from "axios";
 
 function AuthProvider({ children }: any) {
   const localAccessToken = getAccessToken() || null;
-  const [userGlobal, setUserGlobal] = useState(getUserData());
+  const [userGlobal, setUserGlobal] = useState<UserProfile | null>();
   const navigate = useNavigate();
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
-    console.log("AuthProvider userGlobal:", userGlobal);
-    setUserData(userGlobal === null ? {} : userGlobal);
-    if (userGlobal != null) {
-      if (userGlobal?.role === UserRole.INSTRUCTOR) {
-        navigate(USER_PATH.STUDENTS);
-      } else if (userGlobal?.role === UserRole.STUDENT) {
-        navigate(USER_PATH.LESSONS);
-      }
-    }
+    fetchProfile();
   }, []);
+
+  const fetchProfile = useCallback(async () => {
+    const userData = getUserData();
+    console.log({
+      type: "before getProfile",
+      userData,
+      localAccessToken,
+    });
+    if (userData && userData?.accessToken && userData?.refreshToken) {
+      const getProfileResponse = await axiosPrivate.get("/getProfile");
+      console.log({
+        type: "after getProfile",
+        getProfileResponse,
+      });
+      setUserGlobal({
+        ...getProfileResponse.data,
+        accessToken: userData.accessToken,
+        refreshToken: userData.refreshToken,
+      });
+    }
+  }, [axiosPrivate]);
+
+  const fetProfileAfterLogin = useCallback(
+    async (accessToken: string, refreshToken: string) => {
+      console.log({
+        type: "before getProfile",
+        accessToken,
+        refreshToken,
+      });
+      const getProfileResponse = await axios.get(getBaseUrl() + "/getProfile", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      });
+      console.log({
+        type: "after getProfile",
+        getProfileResponse,
+      });
+      setUserGlobal({
+        ...getProfileResponse.data,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      });
+    },
+    []
+  );
 
   const handleValidateCode = async (
     phoneNumber: string,
@@ -43,16 +86,16 @@ function AuthProvider({ children }: any) {
       });
       console.log({
         type: "after validateAccessCodeApi",
-        response,
+        data: response.data,
       });
       setUserData(response.data);
-      setUserGlobal(response.data);
+      await fetProfileAfterLogin(
+        response.data.accessToken,
+        response.data.refreshToken
+      );
 
-      if (response.data.role === UserRole.INSTRUCTOR) {
+      if (userGlobal?.role === UserRole.INSTRUCTOR) {
         navigate(USER_PATH.STUDENTS);
-        return;
-      } else if (response.data.role === UserRole.STUDENT) {
-        navigate(USER_PATH.LESSONS);
         return;
       }
       ToastSuccess("Login successful!");
@@ -73,12 +116,12 @@ function AuthProvider({ children }: any) {
         response,
       });
       setUserData(response.data);
-      setUserGlobal(response.data);
+      await fetProfileAfterLogin(
+        response.data.accessToken,
+        response.data.refreshToken
+      );
 
-      if (response.data.role === UserRole.INSTRUCTOR) {
-        navigate(USER_PATH.STUDENTS);
-        return;
-      } else if (response.data.role === UserRole.STUDENT) {
+      if (userGlobal?.role === UserRole.STUDENT) {
         navigate(USER_PATH.LESSONS);
         return;
       }

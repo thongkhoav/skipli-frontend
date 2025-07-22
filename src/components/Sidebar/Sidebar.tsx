@@ -41,6 +41,15 @@ const Sidebar = () => {
         >
           Chat
         </Link>
+        <Link
+          to={USER_PATH.PROFILE}
+          className={`px-4 py-2 rounded-md text-gray-700 hover:text-blue-500 ${
+            currentPath.includes(USER_PATH.PROFILE) &&
+            "font-bold bg-blue-500 text-white hover:bg-blue-200"
+          }`}
+        >
+          Profile
+        </Link>
       </nav>
     </aside>
   );

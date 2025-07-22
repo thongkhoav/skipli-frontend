@@ -10,4 +10,5 @@ export const USER_PATH = {
   STUDENTS: "/students",
   LESSONS: "/lessons",
   CHAT: "/chat",
+  PROFILE: "/profile",
 };

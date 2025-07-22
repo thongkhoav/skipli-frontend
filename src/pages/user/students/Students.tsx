@@ -92,7 +92,7 @@ const Students = () => {
       setStudentCreating(true);
       await axiosPrivate.post(`/addStudent`, {
         name: newStudentName,
-        phone: newStudentPhone,
+        phone: `+1${newStudentPhone}`,
         email: newStudentEmail,
         address: newStudentAddress,
       });
@@ -159,6 +159,13 @@ const Students = () => {
     }
   };
 
+  const onChangeNewStudentPhone = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value.replace(/\D/g, "");
+    setNewStudentPhone(value);
+  };
+
   return (
     <div className="w-full bg-white p-6 rounded-lg flex flex-col">
       {/* Delete student */}
@@ -218,7 +225,7 @@ const Students = () => {
               </label>
               <input
                 value={newStudentPhone}
-                onChange={(e) => setNewStudentPhone(e.target.value)}
+                onChange={onChangeNewStudentPhone}
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                 required
               />
@@ -342,7 +349,7 @@ const Students = () => {
                 {student?.name}
               </td>
               <td className="py-2 px-4 border-b text-center">
-                {student?.phone}
+                {student?.phone.replace(/\+1/, "")}
               </td>
               <td className="py-2 px-4 border-b text-center">
                 {student?.email}

@@ -1,12 +1,12 @@
 import { createContext } from "react";
-import { LoginUser } from "~/apis/user.api";
+import { UserProfile } from "~/utils/types/user.type";
 
 export interface IAuthContext {
   token: string;
   onLogin: (phone: string, accessCode: string, email: string) => void;
   onLoginByAccount: (email: string, password: string) => void;
   onLogout: () => void;
-  userGlobal: LoginUser;
+  userGlobal: UserProfile | null;
   setUserGlobal: React.Dispatch<any>;
 }
 
@@ -21,7 +21,6 @@ export const AuthContext = createContext<IAuthContext>({
     name: "",
     email: "",
     phone: "",
-    username: "",
     role: "instructor" as UserRole,
     accessToken: "",
     refreshToken: "",

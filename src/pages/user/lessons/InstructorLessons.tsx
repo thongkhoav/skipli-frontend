@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { LuAsterisk } from "react-icons/lu";
 import Modal from "react-modal";
 import useAxiosPrivate from "~/axios/useAxiosPrivate";
 import { ToastError, ToastSuccess } from "~/components/Toast/Toast";
@@ -92,7 +93,9 @@ const InstructorLessons = () => {
           <h2 className="text-center text-xl font-semibold">Add Lesson</h2>
           <form onSubmit={addLessonSubmit} className="min-w-[400px]">
             <div className="mb-4">
-              <label className="block mb-2 font-semibold shad">Title</label>
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Title <LuAsterisk color="red" />
+              </label>
               <input
                 value={lessonTitle}
                 onChange={(e) => setLessonTitle(e.target.value)}
@@ -101,8 +104,8 @@ const InstructorLessons = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-2 font-semibold shad">
-                Description
+              <label className=" mb-2 font-semibold shad flex items-center">
+                Description <LuAsterisk color="red" />
               </label>
               <textarea
                 minLength={10}

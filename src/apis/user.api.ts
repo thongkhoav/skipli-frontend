@@ -1,14 +1,7 @@
 import axios, { AxiosResponse } from "axios";
-import { UserRole } from "~/store/AuthContext";
 import { HOST } from "~/utils/constants";
 
 export interface LoginUser {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  username?: string;
-  phone?: string;
   accessToken: string;
   refreshToken: string;
 }

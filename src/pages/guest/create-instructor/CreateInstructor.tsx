@@ -3,6 +3,7 @@ import { ToastError, ToastSuccess } from "../../../components/Toast/Toast";
 import { GUEST_PATH } from "~/utils/constants";
 import { useNavigate } from "react-router-dom";
 import { createInstructorApi } from "~/apis/user.api";
+import { LuAsterisk } from "react-icons/lu";
 
 const CreateInstructor = () => {
   const [name, setName] = useState("");
@@ -49,7 +50,9 @@ const CreateInstructor = () => {
         <h1 className="text-2xl font-bold mb-8">Create Instructor</h1>
         <form onSubmit={formSubmit} className="w-60">
           <div className="mb-4">
-            <label className="block mb-2 font-semibold shad">Name</label>
+            <label className=" mb-2 font-semibold shad flex items-center">
+              Name <LuAsterisk color="red" />
+            </label>
             <input
               onChange={onChangeName}
               value={name}
@@ -58,7 +61,9 @@ const CreateInstructor = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2 font-semibold">Phone</label>
+            <label className=" mb-2 font-semibold shad flex items-center">
+              Phone <LuAsterisk color="red" />
+            </label>
             <input
               onChange={onChangePhone}
               value={phone}
@@ -67,7 +72,9 @@ const CreateInstructor = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2 font-semibold">Email</label>
+            <label className=" mb-2 font-semibold shad flex items-center">
+              Email <LuAsterisk color="red" />
+            </label>
             <input
               onChange={onChangeEmail}
               value={email}

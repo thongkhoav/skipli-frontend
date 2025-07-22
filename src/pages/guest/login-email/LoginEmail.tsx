@@ -15,6 +15,7 @@ const LoginEmail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("LoginEmail userGlobal:", userGlobal);
     if (userGlobal) {
       navigate(
         userGlobal.role === UserRole.INSTRUCTOR

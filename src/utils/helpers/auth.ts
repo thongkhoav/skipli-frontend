@@ -9,7 +9,7 @@ import { AuthContext } from "~/store/AuthContext";
 
 export const useAuth = () => useContext(AuthContext);
 
-export const getUserData = () => {
+export const getUserData = (): Partial<LoginUser> | null => {
   let user;
   if (typeof Storage === "undefined") {
     user = {};
@@ -25,6 +25,7 @@ export const setUserData = (user: Partial<LoginUser>) => {
   if (!user || typeof user !== "object") {
     throw new Error("No valid data found");
   }
+  console.log("setUserData", user);
   localStorage.setItem("user", JSON.stringify(user));
 };
 
