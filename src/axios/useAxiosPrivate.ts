@@ -1,14 +1,11 @@
 import { axiosBase } from "./axios";
 import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
-import { clearUserData, getUserData } from "~/utils/helpers";
-import { useNavigate } from "react-router-dom";
-import { GUEST_PATH } from "~/utils/constants";
+import { getUserData } from "~/utils/helpers";
 
 const useAxiosPrivate = () => {
-  // const refresh = useRefreshToken();
+  const refresh = useRefreshToken();
   const user = getUserData();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const requestIntercept = axiosBase.interceptors.request.use(
@@ -35,13 +32,9 @@ const useAxiosPrivate = () => {
         ) {
           prevRequest.sent = true;
 
-          // const newAccessToken = await refresh();
-          // prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-          // clearUserData();
-          // // setUserGlobal(null);
-          // navigate(GUEST_PATH.LOGIN_PHONE);
-          // // refresh page
-          // window.location.reload();
+          const newAccessToken = await refresh();
+          prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
           return axiosBase(prevRequest);
         }
         return Promise.reject(error);
